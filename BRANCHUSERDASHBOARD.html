@@ -45,7 +45,9 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);p
 .tile-title{font-family:'Cinzel',serif; font-size:13px; color:var(--temple-dark); font-weight:700;}
 .tile-big-val{font-family:'Cinzel',serif; font-size:32px; font-weight:700; margin:4px 0; color:#1A237E;}
 .rank-badge-strip {font-size:10px; font-weight:800; color:white; background:linear-gradient(135deg, #FF9100 0%, #E040FB 100%); padding:2px 8px; border-radius:12px;}
-.secondary-track-box { background: var(--saffron-light); border: 1px solid var(--border); padding: 5px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-top: 5px; }
+
+/* Updated Footer Track Box for Realism & Specific Labeling */
+.secondary-track-box { background: var(--saffron-light); border: 1px solid var(--border); padding: 7px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-top: 6px; color: var(--text); }
 
 .leaderboard-sidebar{background:var(--parchment); border:1px solid var(--border); border-radius:12px; padding:14px; height: 100%; max-height:82vh; display: flex; flex-direction: column;}
 .leaderboard-select {width: 100%; padding: 8px; border: 2px solid var(--gold); background: var(--white); border-radius: 6px; font-weight: 700; font-size: 12px; margin-bottom: 10px; outline: none;}
@@ -56,12 +58,14 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);p
 .lead-row.top-style{color:var(--success);font-weight:700}
 .lead-row.bottom-style{color:#D32F2F;font-weight:700}
 
-/* Genuine Portal Corporate Footer Styling */
-.portal-footer { background: var(--temple-dark); color: #fff; padding: 30px 15px; text-align: center; margin-top: 40px; border-top: 3px solid var(--gold); }
-.footer-heading { font-family: 'Cinzel', serif; color: var(--gold); font-size: 16px; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
-.footer-sub { font-size: 12px; color: var(--border); margin-bottom: 15px; font-weight: 600; text-transform: uppercase; }
-.footer-divider { max-width: 150px; height: 1px; background: var(--gold); margin: 0 auto 15px auto; }
-.footer-rights { font-size: 11px; color: #8B6E5A; font-weight: 600; }
+.portal-footer { background: var(--temple-dark); color: #fff; padding: 35px 20px; text-align: center; margin-top: 40px; border-top: 3px solid var(--gold); line-height: 1.6; }
+.footer-heading { font-family: 'Cinzel', serif; color: var(--gold); font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.footer-sub { font-size: 12px; color: var(--border); margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.footer-address { font-size: 12px; color: #E8D5C0; max-width: 800px; margin: 0 auto 12px auto; font-weight: 600; text-transform: uppercase; }
+.footer-contacts { font-size: 12px; color: #FEF0E6; margin-bottom: 18px; font-weight: 600; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.footer-contacts span { background: rgba(232, 98, 10, 0.15); padding: 3px 12px; border-radius: 4px; border: 1px solid rgba(201, 146, 10, 0.3); }
+.footer-divider { max-width: 200px; height: 1px; background: var(--gold); margin: 0 auto 15px auto; opacity: 0.6; }
+.footer-rights { font-size: 11px; color: #8B6E5A; font-weight: 700; letter-spacing: 0.5px; }
 
 #globalLoadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FDF8F0; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .spinner { width: 50px; height: 50px; border: 5px solid #E8D5C0; border-top: 5px solid #E8620A; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
@@ -115,10 +119,14 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);p
   </div>
 </div>
 
-<!-- Genuine Footer Integration -->
 <footer class="portal-footer">
   <div class="footer-heading">BANK OF BARODA</div>
   <div class="footer-sub">DIGITAL BANKING DEPARTMENT — REGIONAL OFFICE AYODHYA</div>
+  <div class="footer-address">📍 Baroda Bhawan, Bank of Baroda Regional Office, Deokali Bypass, Ayodhya</div>
+  <div class="footer-contacts">
+    <span>📞 Mobile: +91 9554968321</span>
+    <span>✉️ Email: rdm.faizabad@bankofbaroda.com</span>
+  </div>
   <div class="footer-divider"></div>
   <div class="footer-rights">© 2026 Bank of Baroda. Internal Circulation Only. All Rights Reserved.</div>
 </footer>
@@ -222,11 +230,7 @@ function syncDashboard(){
     
     const mtdVal = prevMonth ? (ytdVal - prevVal) : ytdVal;
     
-    // [LOGIC ALIGNMENT] 
-    // बड़ी वैल्यू में व्यू के अनुसार डेटा (YTD होने पर टोटल, MTD होने पर सिर्फ उस महीने का)
     const displayMainVal = (viewMode === 'MTD') ? mtdVal : ytdVal;
-    
-    // फुटर बॉक्स हमेशा उस सिलेक्टेड महीने के अंत तक का टोटल "As On Last Date" YTD डेटा दिखाएगा
     const footerCumulativeVal = ytdVal; 
 
     const sortedList = currentRecords.map(r => {
@@ -246,8 +250,7 @@ function syncDashboard(){
           <span class="rank-badge-strip">Rank: ${rankPos > 0 ? rankPos : '—'}/${sortedList.length}</span>
         </div>
         <div class="tile-big-val">${displayMainVal}</div>
-        <div class="secondary-track-box">💼 Total Progress As On ${runtimeAsOnDate}: <strong>${footerCumulativeVal}</strong></div>
-        <div style="font-size:10px; color:var(--muted); font-weight:700; margin-top:6px;">DISPLAY: ${viewMode} • MONTH PERFORMANCE: ${mtdVal >= 0 ? '+' : ''}${mtdVal}</div>
+        <div class="secondary-track-box">💼 MTD PERFORMANCE AS ON ${runtimeAsOnDate} : <strong>${footerCumulativeVal}</strong></div>
       </div>
     `;
   });
