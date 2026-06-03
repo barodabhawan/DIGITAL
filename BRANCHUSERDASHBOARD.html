@@ -56,6 +56,13 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);p
 .lead-row.top-style{color:var(--success);font-weight:700}
 .lead-row.bottom-style{color:#D32F2F;font-weight:700}
 
+/* Genuine Portal Corporate Footer Styling */
+.portal-footer { background: var(--temple-dark); color: #fff; padding: 30px 15px; text-align: center; margin-top: 40px; border-top: 3px solid var(--gold); }
+.footer-heading { font-family: 'Cinzel', serif; color: var(--gold); font-size: 16px; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
+.footer-sub { font-size: 12px; color: var(--border); margin-bottom: 15px; font-weight: 600; text-transform: uppercase; }
+.footer-divider { max-width: 150px; height: 1px; background: var(--gold); margin: 0 auto 15px auto; }
+.footer-rights { font-size: 11px; color: #8B6E5A; font-weight: 600; }
+
 #globalLoadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FDF8F0; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .spinner { width: 50px; height: 50px; border: 5px solid #E8D5C0; border-top: 5px solid #E8620A; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -108,11 +115,19 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);p
   </div>
 </div>
 
+<!-- Genuine Footer Integration -->
+<footer class="portal-footer">
+  <div class="footer-heading">BANK OF BARODA</div>
+  <div class="footer-sub">DIGITAL BANKING DEPARTMENT — REGIONAL OFFICE AYODHYA</div>
+  <div class="footer-divider"></div>
+  <div class="footer-rights">© 2026 Bank of Baroda. Internal Circulation Only. All Rights Reserved.</div>
+</footer>
+
 <script>
 const FIREBASE_DB_URL = "https://digital-tracker-acf68-default-rtdb.firebaseio.com";
 
 let CACHED_TIMELINE = {}; let CACHED_PRODUCTS = []; let CACHED_DATES = {};
-let SERVER_SORTED_MONTHS = []; // स्टोर करेगा कि डेटाबेस में कौन-कौन से महीने एक्टिव हैं
+let SERVER_SORTED_MONTHS = []; 
 const monthsOrder = ['april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'january', 'february', 'march'];
 
 async function initDashboard(){
@@ -136,7 +151,7 @@ async function initDashboard(){
     
     const mSel = document.getElementById('umonthSelect');
     mSel.innerHTML = SERVER_SORTED_MONTHS.map(m=>`<option value="${m}">${m.toUpperCase()}</option>`).join('');
-    mSel.value = SERVER_SORTED_MONTHS[SERVER_SORTED_MONTHS.length-1]; // डिफ़ॉल्ट रूप से सबसे आखिरी महीना (June)
+    mSel.value = SERVER_SORTED_MONTHS[SERVER_SORTED_MONTHS.length-1]; 
 
     document.getElementById('leaderboardProductFilter').innerHTML = CACHED_PRODUCTS.map(p=>`<option value="${p.id}">${p.icon} ${p.name}</option>`).join('');
 
@@ -162,13 +177,11 @@ function handleViewModeChange() {
   const mSel = document.getElementById('umonthSelect');
   
   if (viewMode === 'YTD') {
-    // [FIX] जब यूजर वापस YTD में आएगा, तो कोड आटोमेटिकली सबसे लेटेस्ट उपलब्ध महीने (June) पर रिसेट हो जाएगा
     document.getElementById('monthDropdownWrapper').style.display = 'none';
     if(SERVER_SORTED_MONTHS.length > 0) {
        mSel.value = SERVER_SORTED_MONTHS[SERVER_SORTED_MONTHS.length - 1]; 
     }
   } else {
-    // MTD व्यू में ड्रॉपडाउन दिखेगा ताकि यूजर पुराना महीना चुन सके
     document.getElementById('monthDropdownWrapper').style.display = 'block';
   }
   syncDashboard();
@@ -208,7 +221,13 @@ function syncDashboard(){
     const prevVal = prevBranchRow ? (Number(prevBranchRow[p.id]) || 0) : 0;
     
     const mtdVal = prevMonth ? (ytdVal - prevVal) : ytdVal;
+    
+    // [LOGIC ALIGNMENT] 
+    // बड़ी वैल्यू में व्यू के अनुसार डेटा (YTD होने पर टोटल, MTD होने पर सिर्फ उस महीने का)
     const displayMainVal = (viewMode === 'MTD') ? mtdVal : ytdVal;
+    
+    // फुटर बॉक्स हमेशा उस सिलेक्टेड महीने के अंत तक का टोटल "As On Last Date" YTD डेटा दिखाएगा
+    const footerCumulativeVal = ytdVal; 
 
     const sortedList = currentRecords.map(r => {
       const bAlpha = String(r['Alpha Code']).trim();
@@ -227,8 +246,8 @@ function syncDashboard(){
           <span class="rank-badge-strip">Rank: ${rankPos > 0 ? rankPos : '—'}/${sortedList.length}</span>
         </div>
         <div class="tile-big-val">${displayMainVal}</div>
-        <div class="secondary-track-box">📈 Month Growth (MTD): ${mtdVal >= 0 ? '+' : ''}${mtdVal}</div>
-        <div style="font-size:10px; color:var(--muted); font-weight:700; margin-top:6px;">DISPLAY: ${viewMode} • AS ON: ${runtimeAsOnDate}</div>
+        <div class="secondary-track-box">💼 Total Progress As On ${runtimeAsOnDate}: <strong>${footerCumulativeVal}</strong></div>
+        <div style="font-size:10px; color:var(--muted); font-weight:700; margin-top:6px;">DISPLAY: ${viewMode} • MONTH PERFORMANCE: ${mtdVal >= 0 ? '+' : ''}${mtdVal}</div>
       </div>
     `;
   });
@@ -264,6 +283,16 @@ function renderFixedLeaderboards(month) {
   structured.slice(-5).reverse().forEach((b,i) => { section += `<div class="lead-row bottom-style"><span>${5-i}. ${b.name}</span><span>${b.mtd} (YTD: ${b.ytd})</span></div>`; });
   section += `</div>`;
   container.innerHTML = section;
+}
+
+function exportDataToExcel() {
+  const selectedMonth = document.getElementById('umonthSelect').value;
+  const data = CACHED_TIMELINE[selectedMonth] || [];
+  if(data.length === 0) { alert("No data available to export."); return; }
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Performance");
+  XLSX.writeFile(wb, `Digital_Performance_${selectedMonth.toUpperCase()}.xlsx`);
 }
 
 function exportDashboardAsJpg() {
